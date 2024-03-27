@@ -1,0 +1,48 @@
+language: "ja"
+early_access: false
+reviews:
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: true
+  review_status: true
+  collapse_walkthrough: false
+  path_filters:
+    - "!dist/**"
+  path_instructions:
+    - path: "**/*.ts"
+      instructions: |
+        "Review the JavaScript code for conformity with the Google JavaScript
+        style guide, highlighting any deviations."
+    - path: "**/*.tsx"
+      instructions: |
+        - Use 2 space indentation
+        - Follow the Boy Scout rule: Leave the code cleaner than you found it
+        - Follow YAGNI (You Aren't Gonna Need It): Don't implement functionality until it's needed
+        - Follow DRY (Don't Repeat Yourself): Avoid duplicating code by extracting reusable logic into functions
+        - Follow KISS (Keep It Simple, Stupid): Write simple, straightforward code
+        - TypeScript selector names should be prefixed with 'ts-' and use camelCase
+        - Review the TypeScript code for adherence to the official TypeScript style guide"
+    - path: "**/*.scss"
+      instructions: |
+        "- Use 2 space indentation
+        - Follow BEM naming conventions for CSS selectors, using kebab-case for word separators
+        - Use lowercase for color codes"
+    - path: "**/*.index"
+      instructions: |
+        "- Use 2 space indentation"
+    - path: "tests/**/*"
+      instructions: |
+        "Assess the unit test code employing the Mocha testing framework. Confirm that:
+        - The tests adhere to Mocha's established best practices.
+        - Test descriptions are sufficiently detailed to clarify the purpose of each test."
+  auto_review:
+    enabled: true
+    ignore_title_keywords:
+      - "WIP"
+      - "DO NOT MERGE"
+    drafts: false
+    base_branches:
+      - "dev"
+      - "feat/.*"
+chat:
+  auto_reply: true
