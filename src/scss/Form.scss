@@ -1,0 +1,77 @@
+.rand-str-gen {
+  h1 {
+    font-size: 1.8rem;
+    margin-top: 1rem;
+    font-family: serif;
+  }
+  &__form {
+    width: 90%;
+    margin: 1rem auto 0;
+
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+
+    input[name="charLength"] {
+      margin-left: .3rem;
+      width: 5rem;
+    }
+    input[name="numOfStrings"] {
+      margin-left: .3rem;
+      width: 5rem;
+    }
+  }
+
+  &__gen-btn {
+    margin: 1rem auto;
+    cursor: pointer;
+    font-size: 1.2rem;
+    background-color: #f9f9f9;
+    width: 10rem;
+    border-radius: 5rem;
+    border: none;
+    line-height: 3rem;
+    font-family: serif;
+    display: block;
+    font-weight: bold;
+    box-shadow: 0 .2rem 0 #a5a5a5;
+    transition: .4s;
+    &:hover {
+      transform: translateY(.2rem);
+      box-shadow: 0 0 0 #a5a5a5;
+    }
+  }
+}
+
+.gen-result {
+  width: 90%;
+  margin: 1.5rem auto 0;
+  textarea {
+    width: 20rem;
+    margin: 0 auto;
+    display: block;
+  }
+  &__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 20rem;
+    margin: 1rem auto 0;
+    button {
+      width: 7rem;
+      line-height: 2rem;
+      border-radius: 2rem;
+      font-weight: bold;
+      font-size: .9rem;
+      border: none;
+      font-family: serif;
+      box-shadow: 0 .2rem 0 #a5a5a5;
+      transition: .4s;
+      &:hover {
+        transform: translateY(.2rem);
+        box-shadow: 0 0 0 #a5a5a5;
+      }
+    }
+  }
+}

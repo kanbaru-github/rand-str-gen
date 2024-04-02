@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import '../scss/Form.scss';
 
 interface FormData {
   charLength: number;
@@ -83,7 +84,7 @@ const Form: React.FC = () => {
 
   const getHtmlTags = () => {
     return [
-      "<meta name=\"title\" content=\"Meta\"",
+      "<meta name=\"title\" content=\"Meta\" />",
       "<body>Body</body>",
       "<img src=\"\" alt=\"Img\">",
       "<a href=\"\">Anchor</a>",
@@ -116,10 +117,11 @@ const Form: React.FC = () => {
   };
 
   return (
-    <div>
-      <form>
+    <section className="rand-str-gen">
+      <h1>ランダム文字列生成</h1>
+      <form className="rand-str-gen__form">
         <label>
-          文字数:
+          文字数：
           <input
             type="number"
             name="charLength"
@@ -173,7 +175,7 @@ const Form: React.FC = () => {
           特殊文字
         </label>
         <label>
-          生成文字列数:
+          生成文字列数：
           <input
             type="number"
             name="numOfStrings"
@@ -185,24 +187,28 @@ const Form: React.FC = () => {
 
       <button
         onClick={generateRandomTexts}
+        className="rand-str-gen__gen-btn"
       >
         生成する
       </button>
 
       {editableTexts.map((_, index) => (
-        <div key={index}>
+        <div key={index} className="gen-result">
           <textarea
             value={editableTexts[index] || ''}
             onChange={(e) => handleEditableTextChange(e, index)}
             rows={5}
           />
-          <p>文字数: {(editableTexts[index] || '').length}</p>
-          <button onClick={() => copyToClipboard(index)}>
-            コピー
-          </button>
+
+          <div className="gen-result__foot">
+            <p>文字数：{(editableTexts[index] || '').length}</p>
+            <button onClick={() => copyToClipboard(index)}>
+              コピーする
+            </button>
+          </div>
         </div>
       ))}
-    </div>
+    </section>
   );
 };
 
