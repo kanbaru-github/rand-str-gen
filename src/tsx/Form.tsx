@@ -22,7 +22,7 @@ const initialFormData: FormData = {
 };
 
 const Form: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [formData, setFormData] = useState(initialFormData);
   const [editableTexts, setEditableTexts] = useState<string[]>([]);
   const [clickedBtnIdx, setClickedBtnIdx] = useState<number | null>(null);
 
@@ -117,7 +117,9 @@ const Form: React.FC = () => {
       "--",
       "//",
       "'",
-      "\""
+      "\"",
+      "™️",
+      "©︎",
     ];
   };
 
