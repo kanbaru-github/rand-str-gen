@@ -21,10 +21,23 @@ const initialFormData: FormData = {
   numOfStrings: 1,
 };
 
+const htmlTags = [
+  "<meta name=\"title\" content=\"Meta\" />",
+  "<body>Body</body>",
+  "<img src=\"\" alt=\"Img\">",
+  "<a href=\"\">Anchor</a>",
+  "<script>Script</script>",
+  "<style>Style</style>",
+];
+
 const Form: React.FC = () => {
   const [formData, setFormData] = useState(initialFormData);
   const [editableTexts, setEditableTexts] = useState<string[]>([]);
   const [clickedBtnIdx, setClickedBtnIdx] = useState<number | null>(null);
+  const [showHtmlTags, setShowHtmlTags] = useState(false);
+  const [selectedHtmlTags, setSelectedHtmlTags] = useState<string[]>([]);
+  const [isAccordionOpen, setIsAccordionOpen] = useState(false);
+  const accordionRef = useRef<HTMLDivElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -69,6 +82,37 @@ const Form: React.FC = () => {
     }, 3000);
   };
 
+  const toggleHtmlTags = () => {
+    setShowHtmlTags(!showHtmlTags);
+    setIsAccordionOpen(!isAccordionOpen);
+  }
+
+  const handleHtmlTagCheckboxChange = (tag: string, checked: boolean) => {
+    let newSelectedTags = [...selectedHtmlTags];
+    if (checked) {
+      newSelectedTags.push(tag);
+    } else {
+      newSelectedTags = newSelectedTags.filter((t) => t !== tag);
+    }
+    setSelectedHtmlTags(newSelectedTags);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      htmlTags: newSelectedTags.length > 0,
+    }));
+  };
+
+  const handleCheckAllHtmlTags = (checked: boolean) => {
+    if (checked) {
+      setSelectedHtmlTags(htmlTags);
+    } else {
+      setSelectedHtmlTags([]);
+    }
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      htmlTags: checked,
+    }));
+  };
+
   const getHiraganaChars = () => {
     return [...Array(96)].map((_, i) => String.fromCharCode(i + 0x3041));
   };
@@ -88,14 +132,7 @@ const Form: React.FC = () => {
   };
 
   const getHtmlTags = () => {
-    return [
-      "<meta name=\"title\" content=\"Meta\" />",
-      "<body>Body</body>",
-      "<img src=\"\" alt=\"Img\">",
-      "<a href=\"\">Anchor</a>",
-      "<script>Script</script>",
-      "<style>Style</style>",
-    ];
+    return selectedHtmlTags;
   };
 
   const getSpecialChars = () => {
@@ -163,15 +200,46 @@ const Form: React.FC = () => {
           />
           アルファベット
         </label>
+
         <label>
           <input
             type="checkbox"
             name="htmlTags"
             checked={formData.htmlTags}
-            onChange={handleChange}
+            onChange={toggleHtmlTags}
           />
           HTMLタグ
         </label>
+        {showHtmlTags && (
+          <div
+            ref={accordionRef}
+            className={`accordion-item ${isAccordionOpen ? 'open' : ''}`}
+          >
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedHtmlTags.length === htmlTags.length}
+                onChange={(e) => handleCheckAllHtmlTags(e.target.checked)}
+              />
+              すべてチェック
+            </label>
+            <div className="checkBoxInput">
+              {htmlTags.map((tag, index) => (
+                <label key={index}>
+                  <input
+                    type="checkbox"
+                    checked={selectedHtmlTags.includes(tag)}
+                    onChange={(e) =>
+                      handleHtmlTagCheckboxChange(tag, e.target.checked)
+                    }
+                  />
+                  {tag}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
         <label>
           <input
             type="checkbox"
