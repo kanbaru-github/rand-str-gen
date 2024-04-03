@@ -12,7 +12,7 @@ interface FormData {
 }
 
 const initialFormData: FormData = {
-  charLength: 1,
+  charLength: 10,
   hiragana: false,
   katakana: false,
   alphabet: true,
@@ -24,6 +24,7 @@ const initialFormData: FormData = {
 const Form: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [editableTexts, setEditableTexts] = useState<string[]>([]);
+  const [clickedBtnIdx, setClickedBtnIdx] = useState<number | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -62,6 +63,10 @@ const Form: React.FC = () => {
 
   const copyToClipboard = (index: number) => {
     navigator.clipboard.writeText(editableTexts[index]);
+    setClickedBtnIdx(index);
+    setTimeout(() => {
+      setClickedBtnIdx(null);
+    }, 3000);
   };
 
   const getHiraganaChars = () => {
@@ -202,8 +207,11 @@ const Form: React.FC = () => {
 
           <div className="gen-result__foot">
             <p>文字数：{(editableTexts[index] || '').length}</p>
-            <button onClick={() => copyToClipboard(index)}>
-              コピーする
+            <button
+              onClick={() => copyToClipboard(index)}
+              className={clickedBtnIdx === index ? 'is-clicked' : ''}
+            >
+              {clickedBtnIdx === index ? 'コピーしました！' : 'コピーする'}
             </button>
           </div>
         </div>
