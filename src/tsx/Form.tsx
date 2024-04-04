@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import '../scss/Form.scss';
 
 interface FormData {
@@ -30,14 +30,44 @@ const htmlTags = [
   "<style>Style</style>",
 ];
 
+const spChars = [
+  "!",
+  "@",
+  "#",
+  "$",
+  "%",
+  "^",
+  "&",
+  "*",
+  "(",
+  ")",
+  "-",
+  "_",
+  "+",
+  "=",
+  "--",
+  "//",
+  "'",
+  "\"",
+  "™️",
+  "©︎",
+];
+
 const Form: React.FC = () => {
   const [formData, setFormData] = useState(initialFormData);
   const [editableTexts, setEditableTexts] = useState<string[]>([]);
   const [clickedBtnIdx, setClickedBtnIdx] = useState<number | null>(null);
   const [showHtmlTags, setShowHtmlTags] = useState(false);
   const [selectedHtmlTags, setSelectedHtmlTags] = useState<string[]>([]);
-  const [isAccordionOpen, setIsAccordionOpen] = useState(false);
-  const accordionRef = useRef<HTMLDivElement>(null);
+  const [contentHeight, setContentHeight] = useState(0);
+  const htmlAccordionRef = useRef<HTMLDivElement>(null);
+
+  const [showSpChars, setShowSpChars] = useState(false);
+  const [selectedSpChars, setSelectedSpChars] = useState<string[]>([]);
+  const [spCharsContHeight, setSpCharsHeight] = useState(0);
+  const spCharsAccordionRef = useRef<HTMLDivElement>(null);
+
+  const [isGenText, setIsGenText] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -48,6 +78,7 @@ const Form: React.FC = () => {
   };
 
   const generateRandomTexts = () => {
+    setIsGenText(true);
     const { charLength, hiragana, katakana, alphabet, htmlTags, specialChars, numOfStrings } = formData;
     const charSet = [];
     const newTexts = [];
@@ -56,7 +87,7 @@ const Form: React.FC = () => {
     if (katakana) charSet.push(...getKatakanaChars());
     if (alphabet) charSet.push(...getAlphabetChars());
     if (htmlTags) charSet.push(...getHtmlTags());
-    if (specialChars) charSet.push(...getSpecialChars());
+    if (specialChars) charSet.push(...getSpChars());
 
     for (let i = 0; i < numOfStrings; i++) {
       let randomText = '';
@@ -66,6 +97,10 @@ const Form: React.FC = () => {
       newTexts.push(randomText);
     }
     setEditableTexts(newTexts);
+
+    setTimeout(() => {
+      setIsGenText(false);
+    }, 1000);
   };
 
   const handleEditableTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>, index: number) => {
@@ -82,9 +117,12 @@ const Form: React.FC = () => {
     }, 3000);
   };
 
-  const toggleHtmlTags = () => {
-    setShowHtmlTags(!showHtmlTags);
-    setIsAccordionOpen(!isAccordionOpen);
+  const toggleSpChars = () => {
+    if (spCharsAccordionRef.current) {
+      setShowSpChars(!showSpChars);
+      const height = spCharsAccordionRef.current?.clientHeight + 15;
+      setSpCharsHeight(height);
+    }
   }
 
   const handleHtmlTagCheckboxChange = (tag: string, checked: boolean) => {
@@ -113,6 +151,40 @@ const Form: React.FC = () => {
     }));
   };
 
+  const toggleHtmlTags = () => {
+    if (htmlAccordionRef.current) {
+      setShowHtmlTags(!showHtmlTags);
+      const height = htmlAccordionRef.current?.clientHeight + 15;
+      setContentHeight(height);
+    }
+  }
+
+  const handleSpCharsCheckboxChange = (char: string, checked: boolean) => {
+    let newSelectedSpChars = [...selectedSpChars];
+    if (checked) {
+      newSelectedSpChars.push(char);
+    } else {
+      newSelectedSpChars = newSelectedSpChars.filter((c) => c !== char);
+    }
+    setSelectedSpChars(newSelectedSpChars);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      specialChars: newSelectedSpChars.length > 0,
+    }));
+  };
+
+  const handleCheckAllSpChars = (checked: boolean) => {
+    if (checked) {
+      setSelectedSpChars(spChars);
+    } else {
+      setSelectedSpChars([]);
+    }
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      specialChars: checked,
+    }));
+  };
+
   const getHiraganaChars = () => {
     return [...Array(96)].map((_, i) => String.fromCharCode(i + 0x3041));
   };
@@ -135,30 +207,9 @@ const Form: React.FC = () => {
     return selectedHtmlTags;
   };
 
-  const getSpecialChars = () => {
-    return [
-      "!",
-      "@",
-      "#",
-      "$",
-      "%",
-      "^",
-      "&",
-      "*",
-      "(",
-      ")",
-      "-",
-      "_",
-      "+",
-      "=",
-      "--",
-      "//",
-      "'",
-      "\"",
-      "™️",
-      "©︎",
-    ];
-  };
+  const getSpChars = () => {
+    return selectedSpChars;
+  }
 
   return (
     <section className="rand-str-gen">
@@ -209,11 +260,18 @@ const Form: React.FC = () => {
             onChange={toggleHtmlTags}
           />
           HTMLタグ
+          <span className={`rand-str-gen__accordion-icon ${showHtmlTags ? "open" : ""}`} />
         </label>
-        {showHtmlTags && (
+        <div
+          style={{
+            height: showHtmlTags ? `${contentHeight}px` : "0px",
+            opacity: showHtmlTags ? 1 : 0,
+          }}
+          className="rand-str-gen__accordion-wrap"
+        >
           <div
-            ref={accordionRef}
-            className={`accordion-item ${isAccordionOpen ? 'open' : ''}`}
+            ref={htmlAccordionRef}
+            className="rand-str-gen__accordion-cont"
           >
             <label>
               <input
@@ -238,17 +296,54 @@ const Form: React.FC = () => {
               ))}
             </div>
           </div>
-        )}
+        </div>
 
         <label>
           <input
             type="checkbox"
             name="specialChars"
             checked={formData.specialChars}
-            onChange={handleChange}
+            onChange={toggleSpChars}
           />
           特殊文字
+          <span className={`rand-str-gen__accordion-icon ${showSpChars ? "open" : ""}`} />
         </label>
+        <div
+          style={{
+            height: showSpChars ? `${spCharsContHeight}px` : "0px",
+            opacity: showSpChars ? 1 : 0,
+          }}
+          className="rand-str-gen__accordion-wrap"
+        >
+          <div
+            ref={spCharsAccordionRef}
+            className="rand-str-gen__accordion-cont"
+          >
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedSpChars.length === spChars.length}
+                onChange={(e) => handleCheckAllSpChars(e.target.checked)}
+              />
+              すべてチェック
+            </label>
+            <div className="checkBoxInput">
+              {spChars.map((char, index) => (
+                <label key={index}>
+                  <input
+                    type="checkbox"
+                    checked={selectedSpChars.includes(char)}
+                    onChange={(e) =>
+                      handleSpCharsCheckboxChange(char, e.target.checked)
+                    }
+                  />
+                  {char}
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+
         <label>
           生成文字列数：
           <input
@@ -262,9 +357,9 @@ const Form: React.FC = () => {
 
       <button
         onClick={generateRandomTexts}
-        className="rand-str-gen__gen-btn"
+        className={`rand-str-gen__gen-btn ${isGenText ? "clicked" : ""}`}
       >
-        生成する
+        {isGenText ? "生成中です" : "生成する"}
       </button>
 
       {editableTexts.map((_, index) => (
@@ -279,7 +374,7 @@ const Form: React.FC = () => {
             <p>文字数：{(editableTexts[index] || '').length}</p>
             <button
               onClick={() => copyToClipboard(index)}
-              className={clickedBtnIdx === index ? 'is-clicked' : ''}
+              className={clickedBtnIdx === index ? 'clicked' : ''}
             >
               {clickedBtnIdx === index ? 'コピーしました！' : 'コピーする'}
             </button>
