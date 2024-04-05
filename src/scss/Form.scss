@@ -31,10 +31,12 @@
     width: 90%;
     margin: 1rem auto 0;
 
-    label {
-      display: block;
+    &-label {
+      display: flex;
+      justify-content: space-between;
       margin-top: 1rem;
       cursor: pointer;
+      width: 14rem;
     }
 
     input[name="charLength"] {
@@ -51,6 +53,9 @@
       transition: height 0.2s linear, opacity 0.2s ease-in;
       overflow: hidden;
       position: relative;
+      width: 1.2rem;
+      height: 1.2rem;
+      border: 1px solid #000;
       &::before,
       &::after {
         content: "";
@@ -59,8 +64,8 @@
         height: 1px;
         position: absolute;
         top: 50%;
+        left: 14%;
         background-color: #000;
-        right: -50px;
       }
       &::after {
         transform: rotate(90deg);
@@ -82,6 +87,12 @@
     }
     &-cont {
       padding: 0 2rem;
+      label {
+        display: block;
+        margin-top: 1rem;
+        width: 100%;
+        max-width: 20rem;
+      }
     }
   }
 
@@ -113,7 +124,7 @@
 
 .gen-result {
   width: 90%;
-  margin: 1.5rem auto 0;
+  margin: 1.5rem auto 1rem;
   textarea {
     width: 20rem;
     margin: 0 auto;

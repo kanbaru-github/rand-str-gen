@@ -215,52 +215,65 @@ const Form: React.FC = () => {
     <section className="rand-str-gen">
       <h1>ランダム文字列生成</h1>
       <form className="rand-str-gen__form">
-        <label>
-          文字数：
-          <input
-            type="number"
-            name="charLength"
-            value={formData.charLength}
-            onChange={handleChange}
-          />
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            name="hiragana"
-            checked={formData.hiragana}
-            onChange={handleChange}
-          />
-          ひらがな
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            name="katakana"
-            checked={formData.katakana}
-            onChange={handleChange}
-          />
-          カタカナ
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            name="alphabet"
-            checked={formData.alphabet}
-            onChange={handleChange}
-          />
-          アルファベット
+        <label className="rand-str-gen__form-label">
+          <div>
+            文字数：
+            <input
+              type="number"
+              name="charLength"
+              value={formData.charLength}
+              onChange={handleChange}
+            />
+          </div>
         </label>
 
-        <label>
-          <input
-            type="checkbox"
-            name="htmlTags"
-            checked={formData.htmlTags}
-            onChange={toggleHtmlTags}
-          />
-          HTMLタグ
-          <span className={`rand-str-gen__accordion-icon ${showHtmlTags ? "open" : ""}`} />
+        <label className="rand-str-gen__form-label">
+          <div>
+            <input
+              type="checkbox"
+              name="hiragana"
+              checked={formData.hiragana}
+              onChange={handleChange}
+            />
+            ひらがな
+          </div>
+        </label>
+
+        <label className="rand-str-gen__form-label">
+          <div>
+            <input
+              type="checkbox"
+              name="katakana"
+              checked={formData.katakana}
+              onChange={handleChange}
+            />
+            カタカナ
+          </div>
+        </label>
+
+        <label className="rand-str-gen__form-label">
+          <div>
+            <input
+              type="checkbox"
+              name="alphabet"
+              checked={formData.alphabet}
+              onChange={handleChange}
+            />
+            アルファベット
+          </div>
+        </label>
+
+        <label className="rand-str-gen__form-label">
+          <div>
+            <input
+              type="checkbox"
+              name="htmlTags"
+              checked={formData.htmlTags}
+              onChange={toggleHtmlTags}
+            />
+            HTMLタグ
+          </div>
+          <p className={`rand-str-gen__accordion-icon ${showHtmlTags ? "open" : ""}`}></p>
         </label>
         <div
           style={{
@@ -298,14 +311,16 @@ const Form: React.FC = () => {
           </div>
         </div>
 
-        <label>
-          <input
-            type="checkbox"
-            name="specialChars"
-            checked={formData.specialChars}
-            onChange={toggleSpChars}
-          />
-          特殊文字
+        <label className="rand-str-gen__form-label">
+          <div>
+            <input
+              type="checkbox"
+              name="specialChars"
+              checked={formData.specialChars}
+              onChange={toggleSpChars}
+            />
+            特殊文字
+          </div>
           <span className={`rand-str-gen__accordion-icon ${showSpChars ? "open" : ""}`} />
         </label>
         <div
@@ -344,7 +359,7 @@ const Form: React.FC = () => {
           </div>
         </div>
 
-        <label>
+        <label className="rand-str-gen__form-label">
           生成文字列数：
           <input
             type="number"
@@ -369,7 +384,6 @@ const Form: React.FC = () => {
             onChange={(e) => handleEditableTextChange(e, index)}
             rows={5}
           />
-
           <div className="gen-result__foot">
             <p>文字数：{(editableTexts[index] || '').length}</p>
             <button
