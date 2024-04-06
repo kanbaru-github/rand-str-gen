@@ -8,6 +8,7 @@ interface FormData {
   alphabet: boolean;
   htmlTags: boolean;
   specialChars: boolean;
+  customChar: string;
   numOfStrings: number;
 }
 
@@ -18,6 +19,7 @@ const initialFormData: FormData = {
   alphabet: true,
   htmlTags: false,
   specialChars: false,
+  customChar: "",
   numOfStrings: 1,
 };
 
@@ -66,20 +68,32 @@ const Form: React.FC = () => {
   const [selectedSpChars, setSelectedSpChars] = useState<string[]>([]);
   const [spCharsContHeight, setSpCharsHeight] = useState(0);
   const spCharsAccordionRef = useRef<HTMLDivElement>(null);
+  const [useCustomChar, setUseCustomChar] = useState(false);
 
   const [isGenText, setIsGenText] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: type === "checkbox" ? checked : parseInt(value, 10),
-    }));
+    const { name, value, checked } = e.target;
+    setFormData((prevFormData) => {
+      switch (name) {
+        case 'customChar':
+          setUseCustomChar(value.trim() !== "");
+          return { ...prevFormData, [name]: value };
+        case 'hiragana':
+        case 'katakana':
+        case 'alphabet':
+        case 'htmlTags':
+        case 'specialChars':
+          return { ...prevFormData, [name]: checked };
+        default:
+          return { ...prevFormData, [name]: parseInt(value, 10) };
+      }
+    });
   };
 
   const generateRandomTexts = () => {
     setIsGenText(true);
-    const { charLength, hiragana, katakana, alphabet, htmlTags, specialChars, numOfStrings } = formData;
+    const { charLength, hiragana, katakana, alphabet, htmlTags, specialChars, customChar, numOfStrings } = formData;
     const charSet = [];
     const newTexts = [];
 
@@ -88,12 +102,17 @@ const Form: React.FC = () => {
     if (alphabet) charSet.push(...getAlphabetChars());
     if (htmlTags) charSet.push(...getHtmlTags());
     if (specialChars) charSet.push(...getSpChars());
+    if (customChar) charSet.push(customChar);
 
     for (let i = 0; i < numOfStrings; i++) {
       let randomText = '';
-      for (let j = 0; j < charLength; j++) {
+      while (randomText.length < charLength) {
         randomText += charSet[Math.floor(Math.random() * charSet.length)];
       }
+      if (randomText.length > charLength) {
+        randomText = randomText.slice(0, charLength);
+      }
+
       newTexts.push(randomText);
     }
     setEditableTexts(newTexts);
@@ -352,12 +371,27 @@ const Form: React.FC = () => {
                       handleSpCharsCheckboxChange(char, e.target.checked)
                     }
                   />
-                  {char}
+                    {char}
                 </label>
               ))}
             </div>
           </div>
         </div>
+
+        <label className="rand-str-gen__form-label">
+          <input
+            type="checkbox"
+            checked={useCustomChar}
+            onChange={handleChange}
+          />
+          カスタム：
+          <input
+            type="text"
+            name="customChar"
+            value={formData.customChar}
+            onChange={handleChange}
+          />
+        </label>
 
         <label className="rand-str-gen__form-label">
           生成文字列数：
