@@ -6,7 +6,7 @@ import {
 } from '../utils/constants.ts';
 import FormResult from './FormResult.tsx';
 import { GenFormData } from '../utils/interface.ts';
-import '../../scss/Form.scss';
+import '../../scss/RandomTextGenerator.scss';
 
 const initialFormData: GenFormData = {
   charLength: 10,

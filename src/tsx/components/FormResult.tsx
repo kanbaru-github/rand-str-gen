@@ -8,6 +8,7 @@ import {
   getSpChars,
 } from '../utils/charUtils.ts';
 import { GenFormData } from '../utils/interface.ts';
+import '../../scss/FormResult.scss';
 
 interface GeneratorProps {
   formData: GenFormData;

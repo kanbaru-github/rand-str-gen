@@ -1,0 +1,38 @@
+.gen-result {
+  width: 90%;
+  margin: 1.5rem auto 1rem;
+  textarea {
+    width: 20rem;
+    margin: 0 auto;
+    display: block;
+  }
+  &__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 20rem;
+    margin: 1rem auto 0;
+    button {
+      cursor: pointer;
+      width: 8rem;
+      line-height: 2rem;
+      border-radius: 2rem;
+      font-weight: bold;
+      font-size: .9rem;
+      border: none;
+      font-family: serif;
+      box-shadow: 0 .2rem 0 #a5a5a5;
+      transition: .4s;
+      &:hover {
+        transform: translateY(.2rem);
+        box-shadow: 0 0 0 #a5a5a5;
+      }
+      &.clicked {
+        background-color: #04cb01;
+        color: #fff;
+        animation: hop 1s ease-in-out forwards;
+        cursor: no-drop;
+      }
+    }
+  }
+}
