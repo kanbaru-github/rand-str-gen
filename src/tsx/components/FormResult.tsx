@@ -14,12 +14,14 @@ interface GeneratorProps {
   formData: GenFormData;
   selectedHtmlTags: string[];
   selectedSpChars: string[];
+  isValidFormData: boolean;
 }
 
 const RandomTextGenerator: React.FC<GeneratorProps> = ({
   formData,
   selectedHtmlTags,
-  selectedSpChars
+  selectedSpChars,
+  isValidFormData
 }) => {
   const [editableTexts, setEditableTexts] = useState<string[]>([]);
   const [clickedBtnIdx, setClickedBtnIdx] = useState<number | null>(null);
@@ -29,7 +31,8 @@ const RandomTextGenerator: React.FC<GeneratorProps> = ({
   useEffect(() => {
     textareaRefs.current.forEach(textarea => {
       if (textarea) {
-        textarea.style.height = `${textarea.scrollHeight}px`
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight}px`;
       }
     });
   }, [editableTexts]);
@@ -80,16 +83,16 @@ const RandomTextGenerator: React.FC<GeneratorProps> = ({
   };
 
   return (
-    <>
+    <section className='gen-result'>
       <button
         onClick={generateRandomTexts}
-        className={`rand-str-gen__gen-btn ${isGenText ? "clicked" : ""}`}
+        className={`gen-result__gen-btn ${isGenText ? "clicked" : ""} ${!isValidFormData ? "disabled" : ""}`}
       >
         {isGenText ? "生成中です" : "生成する"}
       </button>
 
       {editableTexts.map((_, index) => (
-        <div key={index} className="gen-result">
+        <div key={index} className="gen-result__cont">
           <textarea
             value={editableTexts[index] || ''}
             onChange={(e) => handleEditableTextChange(e, index)}
@@ -100,7 +103,7 @@ const RandomTextGenerator: React.FC<GeneratorProps> = ({
             }}
             rows={3}
           />
-          <div className="gen-result__foot">
+          <div className="gen-result__cont-foot">
             <p>文字数：{(editableTexts[index] || '').length}</p>
             <button
               onClick={() => copyToClipboard(index)}
@@ -111,7 +114,7 @@ const RandomTextGenerator: React.FC<GeneratorProps> = ({
           </div>
         </div>
       ))}
-    </>
+    </section>
   );
 };
 

@@ -1,13 +1,12 @@
 export const htmlTags = [
   "<h1>Heading</h1>",
-  "<img src=\"\" alt=\"Img\">",
+  "<img src=\"img.png\" alt=\"Img\">",
   "<a href=\"\">Anchor</a>",
-  "<script>Script</script>",
-  "<style>Style</style>",
+  "<script>alert('Script');</script>",
+  "<style>body{background: #000;}</style>",
 ];
 
 export const spChars = [
-  "!",
   "@",
   "#",
   "$",

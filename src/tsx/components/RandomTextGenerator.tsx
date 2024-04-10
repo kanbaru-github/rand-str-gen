@@ -1,5 +1,5 @@
 // src/components/FormSettings.tsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   htmlTags,
   spChars,
@@ -30,6 +30,7 @@ const RandomTextGenerator: React.FC = () => {
   const spCharsAccordionRef = useRef<HTMLDivElement>(null);
   const [spCharsAccordionHeight, setSpCharsAccordionHeight] = useState(0);
   const [useCustomChar, setUseCustomChar] = useState(false);
+  const [isValidFormData, setIsValidFormData] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked } = e.target;
@@ -118,11 +119,21 @@ const RandomTextGenerator: React.FC = () => {
     }));
   };
 
+  useEffect(() => {
+    const isValid = formData.hiragana
+      || formData.katakana
+      || formData.alphabet
+      || formData.htmlTags
+      || formData.specialChars
+      || formData.customChar !== '';
+    setIsValidFormData(isValid);
+  }, [formData])
+
   return (
     <section className="rand-str-gen">
       <h1>ランダム文字列生成</h1>
       <form className="rand-str-gen__form">
-        <label className="rand-str-gen__form-label">
+        <label className="rand-str-gen__form-label rand-str-gen__form-label-number">
           <div>
             文字数：
             <input
@@ -130,6 +141,8 @@ const RandomTextGenerator: React.FC = () => {
               name="charLength"
               value={formData.charLength}
               onChange={handleChange}
+              min={1}
+              max={1000}
             />
           </div>
         </label>
@@ -281,13 +294,15 @@ const RandomTextGenerator: React.FC = () => {
           />
         </label>
 
-        <label className="rand-str-gen__form-label">
+        <label className="rand-str-gen__form-label rand-str-gen__form-label-number">
           生成文字列数：
           <input
             type="number"
             name="numOfStrings"
             value={formData.numOfStrings}
             onChange={handleChange}
+            min={1}
+            max={30}
           />
         </label>
       </form>
@@ -296,6 +311,7 @@ const RandomTextGenerator: React.FC = () => {
         formData={formData}
         selectedHtmlTags={selectedHtmlTags}
         selectedSpChars={selectedSpChars}
+        isValidFormData={isValidFormData}
       />
     </section>
   );
