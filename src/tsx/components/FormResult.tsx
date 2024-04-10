@@ -1,5 +1,5 @@
 // src/components/RandomTextGenerator.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   getHiraganaChars,
   getKatakanaChars,
@@ -24,6 +24,15 @@ const RandomTextGenerator: React.FC<GeneratorProps> = ({
   const [editableTexts, setEditableTexts] = useState<string[]>([]);
   const [clickedBtnIdx, setClickedBtnIdx] = useState<number | null>(null);
   const [isGenText, setIsGenText] = useState(false);
+  const textareaRefs = useRef<HTMLTextAreaElement[]>([]);
+
+  useEffect(() => {
+    textareaRefs.current.forEach(textarea => {
+      if (textarea) {
+        textarea.style.height = `${textarea.scrollHeight}px`
+      }
+    });
+  }, [editableTexts]);
 
   const generateRandomTexts = () => {
     setIsGenText(true);
@@ -84,7 +93,12 @@ const RandomTextGenerator: React.FC<GeneratorProps> = ({
           <textarea
             value={editableTexts[index] || ''}
             onChange={(e) => handleEditableTextChange(e, index)}
-            rows={5}
+            ref={(textarea) => {
+              if (textarea !== null) {
+                textareaRefs.current[index] = textarea
+              }
+            }}
+            rows={3}
           />
           <div className="gen-result__foot">
             <p>文字数：{(editableTexts[index] || '').length}</p>
