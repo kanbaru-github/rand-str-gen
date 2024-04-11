@@ -30,9 +30,10 @@
 
   &__cont {
     width: 90%;
+    max-width: 20rem;
     margin: 1.5rem auto 1rem;
     textarea {
-      width: 20rem;
+      width: 90%;
       margin: 0 auto;
       display: block;
       height: auto;
@@ -41,7 +42,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      width: 20rem;
+      width: 90%;
       margin: 1rem auto 0;
       button {
         cursor: pointer;

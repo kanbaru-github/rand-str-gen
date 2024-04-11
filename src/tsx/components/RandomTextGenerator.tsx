@@ -212,7 +212,7 @@ const RandomTextGenerator: React.FC = () => {
                 checked={selectedHtmlTags.length === htmlTags.length}
                 onChange={(e) => handleCheckAllHtmlTags(e.target.checked)}
               />
-              すべてチェック
+              {selectedHtmlTags.length === htmlTags.length ? "全てのチェックを外す" : "全てチェックする"}
             </label>
             <div className="checkBoxInput">
               {htmlTags.map((tag, index) => (
@@ -260,7 +260,7 @@ const RandomTextGenerator: React.FC = () => {
                 checked={selectedSpChars.length === spChars.length}
                 onChange={(e) => handleCheckAllSpChars(e.target.checked)}
               />
-              すべてチェック
+              {selectedSpChars.length === spChars.length ? "全てのチェックを外す" : "全てチェックする"}
             </label>
             <div className="checkBoxInput">
               {spChars.map((char, index) => (
