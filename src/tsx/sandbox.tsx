@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "../scss/main.scss";
-import RandomTextGenerator from "./components/RandomTextGenerator";
+import App from './App.tsx'
+import "../scss/sandbox.scss";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RandomTextGenerator />
+    <App />
   </React.StrictMode>
 );
