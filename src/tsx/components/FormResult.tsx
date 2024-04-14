@@ -17,7 +17,7 @@ interface GeneratorProps {
   isValidFormData: boolean;
 }
 
-const RandomTextGenerator: React.FC<GeneratorProps> = ({
+const FormResult: React.FC<GeneratorProps> = ({
   formData,
   selectedHtmlTags,
   selectedSpChars,
@@ -118,4 +118,4 @@ const RandomTextGenerator: React.FC<GeneratorProps> = ({
   );
 };
 
-export default RandomTextGenerator;
+export default FormResult;
