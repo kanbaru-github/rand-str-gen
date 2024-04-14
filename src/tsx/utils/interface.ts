@@ -7,4 +7,5 @@ export interface GenFormData {
   specialChars: boolean;
   customChar: string;
   numOfStrings: number;
+  useCustomChar?: boolean;
 }

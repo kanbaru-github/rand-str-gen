@@ -1,5 +1,5 @@
 // src/components/FormSettings.tsx
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import {
   htmlTags,
   spChars,
@@ -7,127 +7,97 @@ import {
 import FormResult from './FormResult.tsx';
 import { GenFormData } from '../utils/interface.ts';
 import '../../scss/RandomTextGenerator.scss';
-
-const initialFormData: GenFormData = {
-  charLength: 10,
-  hiragana: false,
-  katakana: false,
-  alphabet: true,
-  htmlTags: false,
-  specialChars: false,
-  customChar: "",
-  numOfStrings: 1,
-};
+import { initialState, reducer } from '../utils/reducer.ts';
 
 const RandomTextGenerator: React.FC = () => {
-  const [formData, setFormData] = useState(initialFormData);
-  const [showHtmlTags, setShowHtmlTags] = useState(false);
-  const [selectedHtmlTags, setSelectedHtmlTags] = useState<string[]>([]);
-  const htmlAccordionRef = useRef<HTMLDivElement>(null);
-  const [htmlTagsAccordionHeight, setHtmlTagsAccordionHeight] = useState(0);
-  const [showSpChars, setShowSpChars] = useState(false);
-  const [selectedSpChars, setSelectedSpChars] = useState<string[]>([]);
-  const spCharsAccordionRef = useRef<HTMLDivElement>(null);
-  const [spCharsAccordionHeight, setSpCharsAccordionHeight] = useState(0);
-  const [useCustomChar, setUseCustomChar] = useState(false);
-  const [isValidFormData, setIsValidFormData] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked } = e.target;
-    setFormData((prevFormData) => {
-      switch (name) {
-        case 'customChar':
-          setUseCustomChar(value.trim() !== "");
-          return { ...prevFormData, [name]: value };
-        case 'hiragana':
-        case 'katakana':
-        case 'alphabet':
-        case 'htmlTags':
-        case 'specialChars':
-          return { ...prevFormData, [name]: checked };
-        default:
-          return { ...prevFormData, [name]: parseInt(value, 10) };
-      }
-    });
+    let payload: Partial<GenFormData> = { [name]: name === 'customChar' ? value : parseInt(value, 10) };
+    if (name === 'customChar') {
+      payload = { ...payload, useCustomChar: value.trim() !== '' };
+    } else {
+      payload = { ...payload, [name]: checked };
+    }
+    dispatch({ type: 'UPDATE_FORM_DATA', payload });
   };
 
   const toggleHtmlTags = () => {
-    if (htmlAccordionRef.current) {
-      setShowHtmlTags(!showHtmlTags);
-      const height = htmlAccordionRef.current?.clientHeight + 15;
-      setHtmlTagsAccordionHeight(height);
-    }
-  }
+    dispatch({ type: 'TOGGLE_HTML_TAGS' });
+  };
 
   const handleHtmlTagCheckboxChange = (tag: string, checked: boolean) => {
-    let newSelectedTags = [...selectedHtmlTags];
-    if (checked) {
-      newSelectedTags.push(tag);
-    } else {
-      newSelectedTags = newSelectedTags.filter((t) => t !== tag);
-    }
-    setSelectedHtmlTags(newSelectedTags);
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      htmlTags: newSelectedTags.length > 0,
-    }));
+    const newSelectedTags = checked
+      ? [...state.selectedHtmlTags, tag]
+      : state.selectedHtmlTags.filter((t) => t !== tag);
+    dispatch({
+      type: 'UPDATE_SELECTED_HTML_TAGS',
+      payload: newSelectedTags,
+    });
+    dispatch({
+      type: 'UPDATE_FORM_DATA',
+      payload: { htmlTags: newSelectedTags.length > 0 },
+    });
   };
 
   const handleCheckAllHtmlTags = (checked: boolean) => {
-    if (checked) {
-      setSelectedHtmlTags(htmlTags);
-    } else {
-      setSelectedHtmlTags([]);
-    }
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      htmlTags: checked,
-    }));
+    dispatch({
+      type: 'UPDATE_SELECTED_HTML_TAGS',
+      payload: checked ? htmlTags : [],
+    });
+    dispatch({
+      type: 'UPDATE_FORM_DATA',
+      payload: { htmlTags: checked },
+    });
   };
 
   const toggleSpChars = () => {
-    if (spCharsAccordionRef.current) {
-      setShowSpChars(!showSpChars);
-      const height = spCharsAccordionRef.current?.clientHeight + 15;
-      setSpCharsAccordionHeight(height);
-    }
-  }
+    dispatch({ type: 'TOGGLE_SP_CHARS' });
+  };
 
   const handleSpCharsCheckboxChange = (char: string, checked: boolean) => {
-    let newSelectedSpChars = [...selectedSpChars];
-    if (checked) {
-      newSelectedSpChars.push(char);
-    } else {
-      newSelectedSpChars = newSelectedSpChars.filter((c) => c !== char);
-    }
-    setSelectedSpChars(newSelectedSpChars);
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      specialChars: newSelectedSpChars.length > 0,
-    }));
+    const newSelectedSpChars = checked
+      ? [...state.selectedSpChars, char]
+      : state.selectedSpChars.filter((c) => c !== char);
+    dispatch({
+      type: 'UPDATE_SELECTED_SP_CHARS',
+      payload: newSelectedSpChars,
+    });
+    dispatch({
+      type: 'UPDATE_FORM_DATA',
+      payload: { specialChars: newSelectedSpChars.length > 0 },
+    });
   };
 
   const handleCheckAllSpChars = (checked: boolean) => {
-    if (checked) {
-      setSelectedSpChars(spChars);
-    } else {
-      setSelectedSpChars([]);
-    }
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      specialChars: checked,
-    }));
+    dispatch({
+      type: 'UPDATE_SELECTED_SP_CHARS',
+      payload: checked ? spChars : [],
+    });
+    dispatch({
+      type: 'UPDATE_FORM_DATA',
+      payload: { specialChars: checked },
+    });
   };
 
   useEffect(() => {
-    const isValid = formData.hiragana
-      || formData.katakana
-      || formData.alphabet
-      || formData.htmlTags
-      || formData.specialChars
-      || formData.customChar !== '';
-    setIsValidFormData(isValid);
-  }, [formData])
+    const isValid =
+      state.hiragana ||
+      state.katakana ||
+      state.alphabet ||
+      state.htmlTags ||
+      state.specialChars ||
+      state.customChar !== '';
+    dispatch({ type: 'SET_IS_VALID_FORM_DATA', payload: isValid });
+  }, [
+    state.hiragana,
+    state.katakana,
+    state.alphabet,
+    state.htmlTags,
+    state.specialChars,
+    state.customChar,
+  ]);
 
   return (
     <section className="rand-str-gen">
@@ -139,7 +109,7 @@ const RandomTextGenerator: React.FC = () => {
             <input
               type="number"
               name="charLength"
-              value={formData.charLength}
+              value={state.charLength}
               onChange={handleChange}
               min={1}
               max={1000}
@@ -152,7 +122,7 @@ const RandomTextGenerator: React.FC = () => {
             <input
               type="checkbox"
               name="hiragana"
-              checked={formData.hiragana}
+              checked={state.hiragana}
               onChange={handleChange}
             />
             ひらがな
@@ -164,7 +134,7 @@ const RandomTextGenerator: React.FC = () => {
             <input
               type="checkbox"
               name="katakana"
-              checked={formData.katakana}
+              checked={state.katakana}
               onChange={handleChange}
             />
             カタカナ
@@ -176,7 +146,7 @@ const RandomTextGenerator: React.FC = () => {
             <input
               type="checkbox"
               name="alphabet"
-              checked={formData.alphabet}
+              checked={state.alphabet}
               onChange={handleChange}
             />
             アルファベット
@@ -188,38 +158,38 @@ const RandomTextGenerator: React.FC = () => {
             <input
               type="checkbox"
               name="htmlTags"
-              checked={formData.htmlTags}
+              checked={state.htmlTags}
               onChange={toggleHtmlTags}
             />
             HTMLタグ
           </div>
-          <p className={`rand-str-gen__accordion-icon ${showHtmlTags ? "open" : ""}`}></p>
+          <p className={`rand-str-gen__accordion-icon ${state.showHtmlTags ? "open" : ""}`}></p>
         </label>
         <div
           style={{
-            height: showHtmlTags ? `${htmlTagsAccordionHeight}px` : "0px",
-            opacity: showHtmlTags ? 1 : 0,
+            height: state.showHtmlTags ? `${state.htmlTagsAccordionHeight}px` : "0px",
+            opacity: state.showHtmlTags ? 1 : 0,
           }}
           className="rand-str-gen__accordion-wrap"
         >
           <div
-            ref={htmlAccordionRef}
+            ref={state.htmlAccordionRef}
             className="rand-str-gen__accordion-cont"
           >
             <label>
               <input
                 type="checkbox"
-                checked={selectedHtmlTags.length === htmlTags.length}
+                checked={state.selectedHtmlTags.length === htmlTags.length}
                 onChange={(e) => handleCheckAllHtmlTags(e.target.checked)}
               />
-              {selectedHtmlTags.length === htmlTags.length ? "全てのチェックを外す" : "全てチェックする"}
+              {state.selectedHtmlTags.length === htmlTags.length ? "全てのチェックを外す" : "全てチェックする"}
             </label>
             <div className="checkBoxInput">
               {htmlTags.map((tag, index) => (
                 <label key={index}>
                   <input
                     type="checkbox"
-                    checked={selectedHtmlTags.includes(tag)}
+                    checked={state.selectedHtmlTags.includes(tag)}
                     onChange={(e) =>
                       handleHtmlTagCheckboxChange(tag, e.target.checked)
                     }
@@ -236,38 +206,38 @@ const RandomTextGenerator: React.FC = () => {
             <input
               type="checkbox"
               name="specialChars"
-              checked={formData.specialChars}
+              checked={state.specialChars}
               onChange={toggleSpChars}
             />
             特殊文字
           </div>
-          <span className={`rand-str-gen__accordion-icon ${showSpChars ? "open" : ""}`} />
+          <span className={`rand-str-gen__accordion-icon ${state.showSpChars ? "open" : ""}`} />
         </label>
         <div
           style={{
-            height: showSpChars ? `${spCharsAccordionHeight}px` : "0px",
-            opacity: showSpChars ? 1 : 0,
+            height: state.showSpChars ? `${state.spCharsAccordionHeight}px` : "0px",
+            opacity: state.showSpChars ? 1 : 0,
           }}
           className="rand-str-gen__accordion-wrap"
         >
           <div
-            ref={spCharsAccordionRef}
+            ref={state.spCharsAccordionRef}
             className="rand-str-gen__accordion-cont"
           >
             <label>
               <input
                 type="checkbox"
-                checked={selectedSpChars.length === spChars.length}
+                checked={state.selectedSpChars.length === spChars.length}
                 onChange={(e) => handleCheckAllSpChars(e.target.checked)}
               />
-              {selectedSpChars.length === spChars.length ? "全てのチェックを外す" : "全てチェックする"}
+              {state.selectedSpChars.length === spChars.length ? "全てのチェックを外す" : "全てチェックする"}
             </label>
             <div className="checkBoxInput">
               {spChars.map((char, index) => (
                 <label key={index}>
                   <input
                     type="checkbox"
-                    checked={selectedSpChars.includes(char)}
+                    checked={state.selectedSpChars.includes(char)}
                     onChange={(e) =>
                       handleSpCharsCheckboxChange(char, e.target.checked)
                     }
@@ -282,14 +252,14 @@ const RandomTextGenerator: React.FC = () => {
         <label className="rand-str-gen__form-label">
           <input
             type="checkbox"
-            checked={useCustomChar}
+            checked={state.useCustomChar}
             onChange={handleChange}
           />
           カスタム：
           <input
             type="text"
             name="customChar"
-            value={formData.customChar}
+            value={state.customChar}
             onChange={handleChange}
           />
         </label>
@@ -299,7 +269,7 @@ const RandomTextGenerator: React.FC = () => {
           <input
             type="number"
             name="numOfStrings"
-            value={formData.numOfStrings}
+            value={state.numOfStrings}
             onChange={handleChange}
             min={1}
             max={30}
@@ -308,10 +278,10 @@ const RandomTextGenerator: React.FC = () => {
       </form>
 
       <FormResult
-        formData={formData}
-        selectedHtmlTags={selectedHtmlTags}
-        selectedSpChars={selectedSpChars}
-        isValidFormData={isValidFormData}
+        formData={state}
+        selectedHtmlTags={state.selectedHtmlTags}
+        selectedSpChars={state.selectedSpChars}
+        isValidFormData={state.isValidFormData}
       />
     </section>
   );
