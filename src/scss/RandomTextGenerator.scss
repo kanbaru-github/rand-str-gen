@@ -99,4 +99,35 @@
       }
     }
   }
+
+  &__gen-btn {
+    margin: 1rem auto;
+    cursor: pointer;
+    font-size: 1.2rem;
+    background-color: #f9f9f9;
+    width: 10rem;
+    border-radius: 5rem;
+    border: none;
+    line-height: 3rem;
+    font-family: serif;
+    display: block;
+    font-weight: bold;
+    box-shadow: 0 .2rem 0 #a5a5a5;
+    transition: .4s;
+    &:hover {
+      transform: translateY(.2rem);
+      box-shadow: 0 0 0 #a5a5a5;
+    }
+    &.clicked {
+      background-color: #06ffea;
+      animation: hop 1s ease-in-out forwards;
+      cursor: no-drop;
+    }
+    &.disabled {
+      cursor: no-drop;
+      pointer-events: none;
+      transform: translateY(.2rem);
+      box-shadow: 0 0 0 #a5a5a5;
+    }
+  }
 }

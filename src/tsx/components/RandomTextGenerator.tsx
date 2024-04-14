@@ -1,11 +1,17 @@
 // src/components/FormSettings.tsx
 import React, { useEffect, useReducer } from 'react';
 import {
+  getHiraganaChars,
+  getKatakanaChars,
+  getAlphabetChars,
+  getHtmlTags,
+  getSpChars,
+} from '../utils/charUtils.ts';
+import {
   htmlTags,
   spChars,
 } from '../utils/constants.ts';
 import FormResult from './FormResult.tsx';
-import { GenFormData } from '../utils/interface.ts';
 import '../../scss/RandomTextGenerator.scss';
 import { initialState, reducer } from '../utils/reducer.ts';
 
@@ -14,13 +20,27 @@ const RandomTextGenerator: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked } = e.target;
-    let payload: Partial<GenFormData> = { [name]: name === 'customChar' ? value : parseInt(value, 10) };
-    if (name === 'customChar') {
-      payload = { ...payload, useCustomChar: value.trim() !== '' };
-    } else {
-      payload = { ...payload, [name]: checked };
+    switch (name) {
+      case 'customChar':
+        dispatch({
+          type: 'UPDATE_FORM_DATA',
+          payload: { customChar: value, useCustomChar: value.trim() !== '' },
+        });
+        break;
+      case 'charLength':
+      case 'numOfStrings':
+        dispatch({
+          type: 'UPDATE_FORM_DATA',
+          payload: { [name]: parseInt(value, 10) },
+        });
+        break;
+      default:
+        dispatch({
+          type: 'UPDATE_FORM_DATA',
+          payload: { [name]: checked },
+        })
+        break;
     }
-    dispatch({ type: 'UPDATE_FORM_DATA', payload });
   };
 
   const toggleHtmlTags = () => {
@@ -82,22 +102,74 @@ const RandomTextGenerator: React.FC = () => {
   };
 
   useEffect(() => {
-    const isValid =
-      state.hiragana ||
-      state.katakana ||
-      state.alphabet ||
-      state.htmlTags ||
-      state.specialChars ||
-      state.customChar !== '';
+    const isValid = state.charLength > 0
+      && state.numOfStrings > 0
+      && (state.hiragana
+        || state.katakana
+        || state.alphabet
+        || state.htmlTags
+        || state.specialChars
+        || state.customChar !== ''
+      );
     dispatch({ type: 'SET_IS_VALID_FORM_DATA', payload: isValid });
   }, [
+    state.charLength,
     state.hiragana,
     state.katakana,
     state.alphabet,
     state.htmlTags,
     state.specialChars,
     state.customChar,
+    state.numOfStrings,
   ]);
+
+  const generateRandomTexts = () => {
+    const { charLength, hiragana, katakana, alphabet, htmlTags, specialChars, customChar, numOfStrings } = state;
+    const charSet = [];
+    const newTexts = [];
+
+    if (hiragana) charSet.push(...getHiraganaChars());
+    if (katakana) charSet.push(...getKatakanaChars());
+    if (alphabet) charSet.push(...getAlphabetChars());
+    if (htmlTags) charSet.push(...getHtmlTags(state.selectedHtmlTags));
+    if (specialChars) charSet.push(...getSpChars(state.selectedSpChars));
+    if (customChar) charSet.push(customChar);
+
+    for (let i = 0; i < numOfStrings; i++) {
+      let randomText = '';
+      while (randomText.length < charLength) {
+        randomText += charSet[Math.floor(Math.random() * charSet.length)];
+      }
+      if (randomText.length > charLength) {
+        randomText = randomText.slice(0, charLength);
+      }
+
+      newTexts.push(randomText);
+    }
+
+    dispatch({
+      type: 'UPDATE_EDITABLE_TEXTS',
+      payload: newTexts,
+    });
+    dispatch({
+      type: 'SET_IS_GEN_TEXT',
+      payload: true,
+    });
+
+    setTimeout(() => {
+      dispatch({
+        type: 'SET_IS_GEN_TEXT',
+        payload: false
+      })
+    }, 1000);
+  };
+
+  const handleEditableTextChange = (index: number, value: string) => {
+    dispatch({
+      type: 'UPDATE_EDITABLE_TEXT',
+      payload: { index, value },
+    })
+  };
 
   return (
     <section className="rand-str-gen">
@@ -277,11 +349,16 @@ const RandomTextGenerator: React.FC = () => {
         </label>
       </form>
 
+      <button
+        onClick={generateRandomTexts}
+        className={`rand-str-gen__gen-btn ${state.isGenText ? "clicked" : ""} ${!state.isValidFormData ? "disabled" : ""}`}
+      >
+        {state.isGenText ? "生成中です" : "生成する"}
+      </button>
+
       <FormResult
-        formData={state}
-        selectedHtmlTags={state.selectedHtmlTags}
-        selectedSpChars={state.selectedSpChars}
-        isValidFormData={state.isValidFormData}
+        editableTexts={state.editableTexts}
+        onEditableTextChange={handleEditableTextChange}
       />
     </section>
   );

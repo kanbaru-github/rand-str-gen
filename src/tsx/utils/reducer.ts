@@ -8,7 +8,10 @@ type Action =
   | { type: 'TOGGLE_SP_CHARS' }
   | { type: 'UPDATE_SELECTED_SP_CHARS'; payload: string[] }
   | { type: 'SET_USE_CUSTOM_CHAR'; payload: boolean }
-  | { type: 'SET_IS_VALID_FORM_DATA'; payload: boolean };
+  | { type: 'SET_IS_VALID_FORM_DATA'; payload: boolean }
+  | { type: 'UPDATE_EDITABLE_TEXTS'; payload: string[] }
+  | { type: 'UPDATE_EDITABLE_TEXT'; payload: { index: number, value: string} }
+  | { type: 'SET_IS_GEN_TEXT'; payload: boolean };
 
 const initialState: GenFormData & {
   showHtmlTags: boolean;
@@ -20,6 +23,9 @@ const initialState: GenFormData & {
   htmlTagsAccordionHeight: number;
   spCharsAccordionRef?: RefObject<HTMLDivElement>;
   spCharsAccordionHeight: number;
+  isValidFormDate: boolean;
+  editableTexts: string[];
+  isGenText: boolean;
 } = {
   charLength: 10,
   hiragana: false,
@@ -39,6 +45,9 @@ const initialState: GenFormData & {
   htmlTagsAccordionHeight: 0,
   spCharsAccordionRef: createRef<HTMLDivElement>(),
   spCharsAccordionHeight: 0,
+  isValidFormDate: false,
+  editableTexts: [],
+  isGenText: false,
 };
 
 const reducer = (state: typeof initialState, action: Action): typeof initialState => {
@@ -67,6 +76,17 @@ const reducer = (state: typeof initialState, action: Action): typeof initialStat
       return { ...state, useCustomChar: action.payload };
     case 'SET_IS_VALID_FORM_DATA':
       return { ...state, isValidFormData: action.payload };
+    case 'UPDATE_EDITABLE_TEXTS':
+      return { ...state, editableTexts: action.payload };
+    case 'UPDATE_EDITABLE_TEXT':
+      return {
+        ...state,
+        editableTexts: state.editableTexts.map((text, index) =>
+          index === action.payload.index ? action.payload.value : text
+        ),
+      };
+    case 'SET_IS_GEN_TEXT':
+      return { ...state, isGenText: action.payload };
     default:
       return state;
   }
