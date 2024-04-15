@@ -26,9 +26,11 @@
     font-size: 1.8rem;
     margin-top: 1rem;
     font-family: serif;
+    text-align: center;
   }
   &__form {
     width: 90%;
+    max-width: 700px;
     margin: 1rem auto 0;
 
     &-label {
@@ -37,7 +39,8 @@
       align-items: center;
       margin-top: 1rem;
       cursor: pointer;
-      width: 16rem;
+      width: 90%;
+      max-width: 260px;
       &-number {
         justify-content: start;
       }
@@ -94,7 +97,6 @@
         display: block;
         margin-top: 1rem;
         width: 100%;
-        max-width: 20rem;
         cursor: pointer;
       }
     }

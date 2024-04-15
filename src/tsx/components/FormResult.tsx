@@ -1,5 +1,5 @@
 // src/components/RandomTextGenerator.tsx
-import React, { useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import '../../scss/FormResult.scss';
 
 interface FormResultProps {
@@ -7,10 +7,10 @@ interface FormResultProps {
   onEditableTextChange: (index: number, value: string) => void;
 }
 
-const FormResult: React.FC<FormResultProps> = ({
+const FormResult: React.FC<FormResultProps> = memo(({
   editableTexts,
   onEditableTextChange,
-}) => {
+}: FormResultProps) => {
   const [clickedBtnIdx, setClickedBtnIdx] = useState<number | null>(null);
   const textareaRefs = useRef<HTMLTextAreaElement[]>([]);
 
@@ -58,6 +58,6 @@ const FormResult: React.FC<FormResultProps> = ({
       ))}
     </section>
   );
-};
+});
 
 export default FormResult;

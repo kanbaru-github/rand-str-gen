@@ -162,7 +162,16 @@ const RandomTextGenerator: React.FC = () => {
         payload: false
       })
     }, 1000);
+
+    handleScroll();
   };
+
+  const handleScroll = () => {
+    const target = document.querySelector('.gen-result');
+    target?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }
 
   const handleEditableTextChange = (index: number, value: string) => {
     dispatch({
