@@ -1,4 +1,3 @@
-// src/utils/charUtils.ts
 export const getHiraganaChars = () => {
   return [...Array(96)].map((_, i) => String.fromCharCode(i + 0x3041));
 };
@@ -19,4 +18,8 @@ export const getHtmlTags = (selectedTags: string[]) => {
 
 export const getSpChars = (selectedChars: string[]) => {
   return selectedChars;
+};
+
+export const getPictographs = (selectedPictographs: string[]) => {
+  return selectedPictographs;
 };

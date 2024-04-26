@@ -5,6 +5,7 @@ export interface GenFormData {
   alphabet: boolean;
   htmlTags: boolean;
   specialChars: boolean;
+  pictographs: boolean;
   customChar: string;
   numOfStrings: number;
   useCustomChar?: boolean;

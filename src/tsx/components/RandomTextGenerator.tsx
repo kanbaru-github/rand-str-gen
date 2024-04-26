@@ -6,14 +6,17 @@ import {
   getAlphabetChars,
   getHtmlTags,
   getSpChars,
+  getPictographs,
 } from '../utils/charUtils.ts';
 import {
   htmlTags,
   spChars,
+  pictographs,
 } from '../utils/constants.ts';
 import FormResult from './FormResult.tsx';
 import '../../scss/RandomTextGenerator.scss';
 import { initialState, reducer } from '../utils/reducer.ts';
+import { delay } from '../utils/func.ts';
 
 const RandomTextGenerator: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -101,6 +104,35 @@ const RandomTextGenerator: React.FC = () => {
     });
   };
 
+  const togglePictographs = () => {
+    dispatch({ type: 'TOGGLE_PICTOGRAPHS' });
+  };
+
+  const handlePictographsCheckboxChange = (char: string, checked: boolean) => {
+    const newSelectedPictographs = checked
+      ? [...state.selectedPictographs, char]
+      : state.selectedPictographs.filter((c) => c !== char);
+    dispatch({
+      type: 'UPDATE_SELECTED_PICTOGRAPHS',
+      payload: newSelectedPictographs,
+    });
+    dispatch({
+      type: 'UPDATE_FORM_DATA',
+      payload: { pictographs: newSelectedPictographs.length > 0 },
+    });
+  };
+
+  const handleCheckAllPictographs = (checked: boolean) => {
+    dispatch({
+      type: 'UPDATE_SELECTED_PICTOGRAPHS',
+      payload: checked ? pictographs : [],
+    });
+    dispatch({
+      type: 'UPDATE_FORM_DATA',
+      payload: { pictographs: checked },
+    });
+  };
+
   useEffect(() => {
     const isValid = state.charLength > 0
       && state.numOfStrings > 0
@@ -109,6 +141,7 @@ const RandomTextGenerator: React.FC = () => {
         || state.alphabet
         || state.htmlTags
         || state.specialChars
+        || state.pictographs
         || state.customChar !== ''
       );
     dispatch({ type: 'SET_IS_VALID_FORM_DATA', payload: isValid });
@@ -119,12 +152,13 @@ const RandomTextGenerator: React.FC = () => {
     state.alphabet,
     state.htmlTags,
     state.specialChars,
+    state.pictographs,
     state.customChar,
     state.numOfStrings,
   ]);
 
-  const generateRandomTexts = () => {
-    const { charLength, hiragana, katakana, alphabet, htmlTags, specialChars, customChar, numOfStrings } = state;
+  const generateRandomTexts = async () => {
+    const { charLength, hiragana, katakana, alphabet, htmlTags, specialChars, pictographs, customChar, numOfStrings } = state;
     const charSet = [];
     const newTexts = [];
 
@@ -133,6 +167,7 @@ const RandomTextGenerator: React.FC = () => {
     if (alphabet) charSet.push(...getAlphabetChars());
     if (htmlTags) charSet.push(...getHtmlTags(state.selectedHtmlTags));
     if (specialChars) charSet.push(...getSpChars(state.selectedSpChars));
+    if (pictographs) charSet.push(...getPictographs(state.selectedPictographs));
     if (customChar) charSet.push(customChar);
 
     for (let i = 0; i < numOfStrings; i++) {
@@ -156,12 +191,11 @@ const RandomTextGenerator: React.FC = () => {
       payload: true,
     });
 
-    setTimeout(() => {
-      dispatch({
-        type: 'SET_IS_GEN_TEXT',
-        payload: false
-      })
-    }, 1000);
+    await delay(1000);
+    dispatch({
+      type: 'SET_IS_GEN_TEXT',
+      payload: false
+    });
 
     handleScroll();
   };
@@ -182,7 +216,7 @@ const RandomTextGenerator: React.FC = () => {
 
   return (
     <section className="rand-str-gen">
-      <h1>ランダム文字列生成</h1>
+      <h1>{import.meta.env.VITE_APP_TITLE}</h1>
       <form className="rand-str-gen__form">
         <label className="rand-str-gen__form-label rand-str-gen__form-label-number">
           <div>
@@ -321,6 +355,54 @@ const RandomTextGenerator: React.FC = () => {
                     checked={state.selectedSpChars.includes(char)}
                     onChange={(e) =>
                       handleSpCharsCheckboxChange(char, e.target.checked)
+                    }
+                  />
+                    {char}
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <label className="rand-str-gen__form-label">
+          <div>
+            <input
+              type="checkbox"
+              name="pictographs"
+              checked={state.pictographs}
+              onChange={togglePictographs}
+            />
+            絵文字
+          </div>
+          <span className={`rand-str-gen__accordion-icon ${state.showPictographs ? "open" : ""}`} />
+        </label>
+        <div
+          style={{
+            height: state.showPictographs ? `${state.pictographAccordionHeight}px` : "0px",
+            opacity: state.showPictographs ? 1 : 0,
+          }}
+          className="rand-str-gen__accordion-wrap"
+        >
+          <div
+            ref={state.pictographsAccordionRef}
+            className="rand-str-gen__accordion-cont"
+          >
+            <label>
+              <input
+                type="checkbox"
+                checked={state.selectedPictographs.length === pictographs.length}
+                onChange={(e) => handleCheckAllPictographs(e.target.checked)}
+              />
+              {state.selectedPictographs.length === pictographs.length ? "全てのチェックを外す" : "全てチェックする"}
+            </label>
+            <div className="checkBoxInput">
+              {pictographs.map((char, index) => (
+                <label key={index}>
+                  <input
+                    type="checkbox"
+                    checked={state.selectedPictographs.includes(char)}
+                    onChange={(e) =>
+                      handlePictographsCheckboxChange(char, e.target.checked)
                     }
                   />
                     {char}

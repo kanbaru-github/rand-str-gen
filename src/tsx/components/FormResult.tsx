@@ -1,6 +1,7 @@
 // src/components/RandomTextGenerator.tsx
 import React, { memo, useEffect, useRef, useState } from 'react';
 import '../../scss/FormResult.scss';
+import { delay } from '../utils/func';
 
 interface FormResultProps {
   editableTexts: string[];
@@ -23,12 +24,11 @@ const FormResult: React.FC<FormResultProps> = memo(({
     });
   }, [editableTexts]);
 
-  const copyToClipboard = (index: number) => {
+  const copyToClipboard = async (index: number) => {
     navigator.clipboard.writeText(editableTexts[index]);
     setClickedBtnIdx(index);
-    setTimeout(() => {
-      setClickedBtnIdx(null);
-    }, 3000);
+    await delay(3000);
+    setClickedBtnIdx(null);
   };
 
   return (

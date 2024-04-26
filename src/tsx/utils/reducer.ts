@@ -7,6 +7,8 @@ type Action =
   | { type: 'UPDATE_SELECTED_HTML_TAGS'; payload: string[] }
   | { type: 'TOGGLE_SP_CHARS' }
   | { type: 'UPDATE_SELECTED_SP_CHARS'; payload: string[] }
+  | { type: 'TOGGLE_PICTOGRAPHS' }
+  | { type: 'UPDATE_SELECTED_PICTOGRAPHS'; payload: string[] }
   | { type: 'SET_USE_CUSTOM_CHAR'; payload: boolean }
   | { type: 'SET_IS_VALID_FORM_DATA'; payload: boolean }
   | { type: 'UPDATE_EDITABLE_TEXTS'; payload: string[] }
@@ -18,11 +20,15 @@ const initialState: GenFormData & {
   selectedHtmlTags: string[];
   showSpChars: boolean;
   selectedSpChars: string[];
+  showPictographs: boolean;
+  selectedPictographs: string[];
   isValidFormData: boolean;
   htmlAccordionRef?: RefObject<HTMLDivElement>;
   htmlTagsAccordionHeight: number;
   spCharsAccordionRef?: RefObject<HTMLDivElement>;
   spCharsAccordionHeight: number;
+  pictographsAccordionRef?: RefObject<HTMLDivElement>;
+  pictographAccordionHeight: number;
   isValidFormDate: boolean;
   editableTexts: string[];
   isGenText: boolean;
@@ -33,18 +39,23 @@ const initialState: GenFormData & {
   alphabet: true,
   htmlTags: false,
   specialChars: false,
+  pictographs: false,
   customChar: "",
   numOfStrings: 1,
   showHtmlTags: false,
   selectedHtmlTags: [],
   showSpChars: false,
   selectedSpChars: [],
+  showPictographs: false,
+  selectedPictographs: [],
   useCustomChar: false,
   isValidFormData: false,
   htmlAccordionRef: createRef<HTMLDivElement>(),
   htmlTagsAccordionHeight: 0,
   spCharsAccordionRef: createRef<HTMLDivElement>(),
   spCharsAccordionHeight: 0,
+  pictographsAccordionRef: createRef<HTMLDivElement>(),
+  pictographAccordionHeight: 0,
   isValidFormDate: false,
   editableTexts: [],
   isGenText: false,
@@ -72,6 +83,15 @@ const reducer = (state: typeof initialState, action: Action): typeof initialStat
     }
     case 'UPDATE_SELECTED_SP_CHARS':
       return { ...state, selectedSpChars: action.payload };
+    case 'TOGGLE_PICTOGRAPHS': {
+      const showPictographs = !state.showPictographs;
+      const pictographAccordionHeight = state.pictographsAccordionRef?.current?.clientHeight
+        ? state.pictographsAccordionRef?.current.clientHeight + 15
+        : 0;
+      return { ...state, showPictographs, pictographAccordionHeight };
+    }
+    case 'UPDATE_SELECTED_PICTOGRAPHS':
+      return { ...state, selectedPictographs: action.payload };
     case 'SET_USE_CUSTOM_CHAR':
       return { ...state, useCustomChar: action.payload };
     case 'SET_IS_VALID_FORM_DATA':
