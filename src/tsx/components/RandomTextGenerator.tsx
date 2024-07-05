@@ -227,7 +227,7 @@ const RandomTextGenerator: React.FC = () => {
               value={state.charLength}
               onChange={handleChange}
               min={1}
-              max={1000}
+              max={2000}
             />
           </div>
         </label>
